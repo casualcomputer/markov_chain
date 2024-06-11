@@ -25,7 +25,7 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  source("visualize")
+  source("visualize.R")
   source("helpers.R")
   observeEvent(input$generate, {
     updateMatrixInput(session, "transitionMatrix", 
