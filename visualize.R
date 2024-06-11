@@ -44,10 +44,10 @@ create_and_plot_interactive_graph <- function(Q, state_names = NULL) {
   
   return(net)
 }
-
-# Example usage
-Q_6 <- matrix(runif(36, 0, 0.3), 6, 6)  # Random probabilities for demonstration
-rownames(Q_6) <- colnames(Q_6) <- paste("State", 1:6)
-custom_state_names <- c("Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Zeta")
-g_interactive <- create_and_plot_interactive_graph(Q_6, custom_state_names)
-g_interactive
+# 
+# # Example usage
+# Q_6 <- matrix(runif(36, 0, 0.3), 6, 6)  # Random probabilities for demonstration
+# rownames(Q_6) <- colnames(Q_6) <- paste("State", 1:6)
+# custom_state_names <- c("Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Zeta")
+# g_interactive <- create_and_plot_interactive_graph(Q_6, custom_state_names)
+# g_interactive
