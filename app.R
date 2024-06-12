@@ -1,3 +1,8 @@
+install.packages("shiny")
+install.packages("shinyMatrix")
+install.packages("visNetwork")
+install.packages("msm")
+
 library(shiny)
 library(shinyMatrix)
 library(visNetwork)
