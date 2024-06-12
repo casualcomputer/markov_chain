@@ -1,6 +1,7 @@
 library(shiny)
 library(shinyMatrix)
 library(visNetwork)
+library(msm)
 
 # Define UI
 ui <- fluidPage(
