@@ -35,9 +35,9 @@ ui <- fluidPage(
       sliderInput(
         "slider",
         label = "Time elapsed",
-        min = min(mydata$a),
-        max = max(mydata$a),
-        value = min(mydata$a),
+        min = 1,
+        max = 30,
+        value = 1,
         step = 1,
         animate =
           animationOptions(interval = 200, loop = TRUE)
