@@ -1,5 +1,5 @@
 
-library(expm)
+# library(expm)
 
 reshape_vector_to_matrix <- function(vector, nrow, ncol) {
   if (length(vector) != nrow * ncol) {
@@ -32,8 +32,8 @@ convert_to_matrix <- function(values, nrow, state_names = NULL) {
 
 
 
-# Helper function to calculate the transition probability matrix P(t) from Q
-calculate_P_matrix <- function(Q, t) {
-  P_t <- expm(Q * t)
-  return(P_t)
-}
+## Helper function to calculate the transition probability matrix P(t) from Q
+#calculate_P_matrix <- function(Q, t) {
+#  P_t <- expm(Q * t)
+#  return(P_t)
+#}
