@@ -1,3 +1,6 @@
+
+library(expm)
+
 reshape_vector_to_matrix <- function(vector, nrow, ncol) {
   if (length(vector) != nrow * ncol) {
     stop("The length of the vector does not match the specified dimensions.")
@@ -25,4 +28,12 @@ convert_to_matrix <- function(values, nrow, state_names = NULL) {
   dimnames(mat) <- list(state_names, state_names)
   
   return(mat)
+}
+
+
+
+# Helper function to calculate the transition probability matrix P(t) from Q
+calculate_P_matrix <- function(Q, t) {
+  P_t <- expm(Q * t)
+  return(P_t)
 }

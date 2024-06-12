@@ -7,18 +7,42 @@ ui <- fluidPage(
   titlePanel("Dynamic Markov Chain Model with Validation"),
   sidebarLayout(
     sidebarPanel(
-      numericInput("matrixSize", "Define matrix size:", 4, min = 2, max = 10),
-      actionButton("generate", "Generate Matrix"),
       fileInput("fileUpload", "Upload Q Matrix (as .RData file)", accept = ".RData"),
-      matrixInput("transitionMatrix", 
-                  label = "Transition Matrix:",
-                  value = matrix(0, 4, 4, dimnames = list(1:4, 1:4)),
-                  rows = list(extend = FALSE, names = TRUE),
-                  cols = list(extend = FALSE, names = TRUE)),
+      numericInput(
+        "matrixSize",
+        "Define matrix size:",
+        4,
+        min = 2,
+        max = 10
+      ),
+      actionButton("generate", "Generate Matrix"),
+      matrixInput(
+        "transitionMatrix",
+        label = "Transition Matrix:",
+        value = as.matrix(rbind(
+          c(0, 0.25, 0, 0.25),
+          c(0.166, 0, 0.166, 0.166),
+          c(0, 0.25, 0, 0.25),
+          c(0, 0, 0, 0)
+        )),
+        rows = list(extend = FALSE, names = TRUE),
+        cols = list(extend = FALSE, names = TRUE)
+      ),
       textOutput("matrixValidation"),
       actionButton("updateGraph", "Update Graph")
     ),
     mainPanel(
+      sliderInput(
+        "slider",
+        label = "Time elapsed",
+        min = min(mydata$a),
+        max = max(mydata$a),
+        value = min(mydata$a),
+        step = 1,
+        animate =
+          animationOptions(interval = 200, loop = TRUE)
+      ),
+      textOutput("timeStepsDisplay"),
       visNetworkOutput("markovGraph")
     )
   )
@@ -27,52 +51,62 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   source("visualize.R")
   source("helpers.R")
+
+  
+  Q_matrix <- reactiveVal(as.matrix(rbind(
+    c(0, 0.25, 0, 0.25),
+    c(0.166, 0, 0.166, 0.166),
+    c(0, 0.25, 0, 0.25),
+    c(0, 0, 0, 0)
+  )))  # Initialize as reactive value
+  Q_msm <- reactiveVal() 
+ 
+  
   observeEvent(input$generate, {
-    updateMatrixInput(session, "transitionMatrix", 
-                      value = matrix(0, input$matrixSize, input$matrixSize, 
-                                     dimnames = list(1:input$matrixSize, 1:input$matrixSize)))
+    new_matrix <- matrix(0, input$matrixSize, input$matrixSize, 
+                         dimnames = list(1:input$matrixSize, 1:input$matrixSize))
+    Q_matrix(new_matrix)
   })
   
   observeEvent(input$fileUpload, {
-    req(input$fileUpload)  # Ensure a file is uploaded
-    # Load the uploaded RData file
+    req(input$fileUpload)
     load(input$fileUpload$datapath)
-    # Assume 'Q_matrix' is the name of the loaded matrix
     if (exists("Q_matrix")) {
-      updateMatrixInput(session, "transitionMatrix", value = Q_matrix)
-      print(paste("names: ", names(Q_matrix)))
+      Q_matrix(get("Q_matrix"))  # Load Q_matrix into reactive variable
+      cav.msm <- msm(state ~ years, subject = PTNUM, data = cav, qmatrix = Q_matrix, deathexact = 4)
+      Q_msm(cav.msm) 
     } else {
       showNotification("No 'Q_matrix' found in the uploaded file.", type = "error")
     }
   })
   
   observeEvent(input$updateGraph, {
-    Q <- as.matrix(sapply(input$transitionMatrix, as.numeric))  # Convert matrix input to numeric
-    Q <- reshape_vector_to_matrix(Q, nrow = input$matrixSize, ncol = input$matrixSize)
-    print(Q)
+    Q <- Q_matrix()  # Access the reactive matrix
+    if (is.null(Q)) {
+      showNotification("Q_matrix is not defined.", type = "error")
+      return()
+    }
     state_names <- colnames(Q)
-    print(paste("state name",state_names))
     output$markovGraph <- renderVisNetwork({
       create_and_plot_interactive_graph(Q, state_names)
     })
   })
   
-  # Validate the transition matrix
-  output$matrixValidation <- renderText({
-    Q <- as.matrix(sapply(input$transitionMatrix, as.numeric))  # Convert matrix input to numeric
-    if (is.null(Q)) {
-      return("Matrix is not defined.")
-    }
-    
-    # Check if all rows sum to 1
-    row_sums <- rowSums(Q)
-    if (all(row_sums == 1)) {
-      return("The matrix is valid: All rows sum to 1.")
-    } else {
-      return("The matrix is invalid: Not all rows sum to 1.")
+  observeEvent(input$slider, {
+    Q <- Q_matrix()  # Ensure Q_matrix is accessed correctly
+    if (!is.null(Q)) {
+      Q_star <- pmatrix.msm(cav.msm, t=input$slider) #transition probability at time t
+      output$markovGraph <- renderVisNetwork({
+        create_and_plot_interactive_graph(Q_star, colnames(Q_star))
+      })
     }
   })
+  
+  output$timeStepsDisplay <- renderText({
+    paste("Slider Value:", input$slider)
+  })
 }
+
 
 # Run the application
 shinyApp(ui = ui, server = server)

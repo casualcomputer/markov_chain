@@ -57,6 +57,7 @@ convert_to_matrix <- function(values, nrow) {
   dimnames(mat) <- list(state_names, state_names)
   
   return(mat)
+  }
 }
 
 # Example usage:
