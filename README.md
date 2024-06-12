@@ -31,7 +31,7 @@ To run this Shiny app on your local machine, you need to have R and Shiny instal
 4. **Clone the Repository**: Clone this repository to your local machine or download the files directly.
 
    ```bash
-   git clone https://yourrepositorylink.com
+   git clone https://github.com/casualcomputer/markov_chain
    ```
 
 5. **Run the App**: Open R and set your working directory to the project folder, then run:
@@ -59,10 +59,6 @@ After launching the app, you will be greeted with a user interface consisting of
 ## Contributing
 
 Contributions to this project are welcome! Please fork the repository and submit a pull request with your enhancements, or open an issue if you find bugs or have suggestions.
-
-## Contact
-
-For support, contact me via [email address] or raise an issue in the repository.
 
 ---
 
