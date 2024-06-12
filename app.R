@@ -5,8 +5,6 @@ install.packages("msm")
 
 library(shiny)
 library(shinyMatrix)
-library(visNetwork)
-library(msm)
 
 # Define UI
 ui <- fluidPage(
@@ -55,9 +53,11 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
+  
   source("visualize.R")
   source("helpers.R")
 
+  library(msm)
   
   Q_matrix <- reactiveVal(as.matrix(rbind(
     c(0, 0.25, 0, 0.25),
