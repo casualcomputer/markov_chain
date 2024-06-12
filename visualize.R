@@ -37,10 +37,14 @@ create_and_plot_interactive_graph <- function(Q, state_names = NULL) {
   
   net <- visNetwork(nodes, edges, width = "100%", height = "600px") %>%
     visNodes(shape = "circle") %>%
-    visEdges(smooth = list(type = "dynamic", roundness = 0.5), font = list(align = "top")) %>%
+    visEdges(smooth = list(smooth = list(enabled = FALSE)), font = list(align = "top")) %>%
+    visIgraphLayout(layout = "layout_in_circle") %>%  # This layout will be fixed
     visPhysics(solver = "forceAtlas2Based", forceAtlas2Based = list(gravitationalConstant = -100, centralGravity = 0.01, springLength = 100, springConstant = 0.05),
                stabilization = list(enabled = TRUE, iterations = 30)  # Enable stabilization
     )
+#    visPhysics(solver = "forceAtlas2Based", forceAtlas2Based = list(gravitationalConstant = -100, centralGravity = 0.01, springLength = 100, springConstant = 0.05),
+#               stabilization = list(enabled = TRUE, iterations = 30)  # Enable stabilization
+#    )
   
   return(net)
 }
