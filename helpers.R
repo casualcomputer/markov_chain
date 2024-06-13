@@ -1,5 +1,3 @@
-library(visNetwork)
-
 # Function to map weights to colors and calculate widths
 map_weight_to_color <- function(weight, max_weight) {
   # Normalize weight to a 0-1 scale based on maximum weight

@@ -2,6 +2,7 @@
 # install.packages("shinyMatrix")
 # install.packages("visNetwork")
 # install.packages("msm")
+# install.packages("igraph")
 
 library(shiny)
 library(shinyMatrix)
@@ -47,7 +48,7 @@ ui <- fluidPage(
         value = 1,
         step = 1,
         animate =
-          animationOptions(interval = 1000, loop = TRUE)
+          animationOptions(interval = 500, loop = TRUE)
       ),
       textOutput("timeStepsDisplay"),
       visNetworkOutput("markovGraph")
@@ -65,7 +66,7 @@ server <- function(input, output, session) {
     c(0, 0, 0, 0)
   )))  # Initialize as reactive value
   
-  
+  graph_initialized <- reactiveVal(FALSE)
   
   observeEvent(input$generate, {
     new_matrix <- matrix(
@@ -98,13 +99,14 @@ server <- function(input, output, session) {
     output$markovGraph <- renderVisNetwork({
       create_and_plot_interactive_graph(Q_matrix(), state_names)
     })
-    Sys.sleep(1)  # Delay for demonstration
+    graph_initialized(TRUE)
   })
   
   observeEvent(input$slider, {
+    Sys.sleep(0.5)  # Introduce a delay of 0.5 seconds
     # print("current Q_matrix before plots:")
     # print(Q_matrix())
-    if (!is.null(Q_matrix())) {
+    if (!is.null(Q_matrix()) && graph_initialized()) {
       cav.msm <- msm(
         state ~ years,
         subject = PTNUM,
@@ -112,7 +114,7 @@ server <- function(input, output, session) {
         qmatrix = Q_matrix(),
         deathexact = 4
       )
-
+      
       Q_star <- pmatrix.msm(cav.msm, t = input$slider) #transition probability at time t
       output$markovGraph <- renderVisNetwork({
         create_and_plot_interactive_graph(Q_star, colnames(Q_star))
@@ -124,7 +126,6 @@ server <- function(input, output, session) {
     paste("Time Step =", input$slider)
   })
 }
-
 
 # Run the application
 shinyApp(ui = ui, server = server)
