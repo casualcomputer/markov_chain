@@ -1,5 +1,4 @@
-
-# library(expm)
+library(msm)
 
 reshape_vector_to_matrix <- function(vector, nrow, ncol) {
   if (length(vector) != nrow * ncol) {

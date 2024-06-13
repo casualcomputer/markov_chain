@@ -1,10 +1,11 @@
-install.packages("shiny")
-install.packages("shinyMatrix")
-install.packages("visNetwork")
-install.packages("msm")
+# install.packages("shiny")
+# install.packages("shinyMatrix")
+# install.packages("visNetwork")
+# install.packages("msm")
 
 library(shiny)
 library(shinyMatrix)
+library(visNetwork)
 
 # Define UI
 ui <- fluidPage(
@@ -44,7 +45,7 @@ ui <- fluidPage(
         value = 1,
         step = 1,
         animate =
-          animationOptions(interval = 200, loop = TRUE)
+          animationOptions(interval = 1000, loop = TRUE)
       ),
       textOutput("timeStepsDisplay"),
       visNetworkOutput("markovGraph")
@@ -56,8 +57,6 @@ server <- function(input, output, session) {
   
   source("visualize.R")
   source("helpers.R")
-
-  library(msm)
   
   Q_matrix <- reactiveVal(as.matrix(rbind(
     c(0, 0.25, 0, 0.25),
@@ -65,7 +64,7 @@ server <- function(input, output, session) {
     c(0, 0.25, 0, 0.25),
     c(0, 0, 0, 0)
   )))  # Initialize as reactive value
-  Q_msm <- reactiveVal() 
+
  
   
   observeEvent(input$generate, {
@@ -79,28 +78,26 @@ server <- function(input, output, session) {
     load(input$fileUpload$datapath)
     if (exists("Q_matrix")) {
       Q_matrix(get("Q_matrix"))  # Load Q_matrix into reactive variable
-      cav.msm <- msm(state ~ years, subject = PTNUM, data = cav, qmatrix = Q_matrix, deathexact = 4)
-      Q_msm(cav.msm) 
     } else {
       showNotification("No 'Q_matrix' found in the uploaded file.", type = "error")
     }
   })
   
   observeEvent(input$updateGraph, {
-    Q <- Q_matrix()  # Access the reactive matrix
-    if (is.null(Q)) {
+
+    if (is.null(Q_matrix)) {
       showNotification("Q_matrix is not defined.", type = "error")
       return()
     }
-    state_names <- colnames(Q)
+    state_names <- colnames(Q_matrix)
     output$markovGraph <- renderVisNetwork({
-      create_and_plot_interactive_graph(Q, state_names)
+      create_and_plot_interactive_graph(Q_matrix(), state_names)
     })
   })
   
   observeEvent(input$slider, {
-    Q <- Q_matrix()  # Ensure Q_matrix is accessed correctly
-    if (!is.null(Q)) {
+    if (!is.null(Q_matrix())) {
+      cav.msm <- msm(state ~ years, subject = PTNUM, data = cav, qmatrix = Q_matrix(), deathexact = 4)
       Q_star <- pmatrix.msm(cav.msm, t=input$slider) #transition probability at time t
       output$markovGraph <- renderVisNetwork({
         create_and_plot_interactive_graph(Q_star, colnames(Q_star))
@@ -109,7 +106,7 @@ server <- function(input, output, session) {
   })
   
   output$timeStepsDisplay <- renderText({
-    paste("Slider Value:", input$slider)
+    paste("Time Step =", input$slider)
   })
 }
 
