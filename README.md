@@ -3,6 +3,8 @@
 
 This project provides a Shiny application designed to visualize the dynamics of Markov Chains. It allows users to interactively modify the transition matrix of a Markov chain and observe the effects on the state transitions over time, visualized through a network graph.
 
+[Launch web app](https://creative-analytics.shinyapps.io/markov_chain/)
+
 ## Features
 
 - **Interactive Transition Matrix**: Users can input and modify the transition matrix that defines the Markov chain.
