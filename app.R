@@ -1,7 +1,8 @@
-# install.packages("shiny")
-# install.packages("shinyMatrix")
-# install.packages("visNetwork")
-# install.packages("msm")
+install.packages("shiny")
+install.packages("shinyMatrix")
+install.packages("visNetwork")
+install.packages("msm")
+install.packages("igraph")
 
 library(shiny)
 library(shinyMatrix)
