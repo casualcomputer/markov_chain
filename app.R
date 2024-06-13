@@ -3,7 +3,7 @@
 # install.packages("visNetwork")
 # install.packages("msm")
 
-#library(shiny)
+library(shiny)
 library(shinyMatrix)
 library(visNetwork)
 library(msm)
